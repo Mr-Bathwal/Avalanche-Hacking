@@ -1,5 +1,5 @@
 import React from 'react';
-import { WagmiConfig } from 'wagmi';
+import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -26,9 +26,8 @@ function App() {
   const toggleSidebar = () => setSidebarOpen((v) => !v);
 
   return (
-    <WagmiConfig config={config}>
-      <RainbowKitProvider 
-        chains={config.chains}
+    <WagmiProvider config={config}>
+      <RainbowKitProvider
         theme={darkTheme({
           accentColor: '#7b3cf0',
           accentColorForeground: 'white',
@@ -36,7 +35,7 @@ function App() {
         })}
         modalSize="compact"
       >
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <div className="app-container">
             <Navbar onToggleSidebar={toggleSidebar} />
             <div className="main-layout">
@@ -59,7 +58,7 @@ function App() {
           <Toaster position="bottom-right" />
         </BrowserRouter>
       </RainbowKitProvider>
-    </WagmiConfig>
+    </WagmiProvider>
   );
 }
 

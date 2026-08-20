@@ -11,7 +11,6 @@ const ExternalEventMint = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const eventData = state?.eventData;
-  const userLocation = state?.userLocation;
 
   const [selectedTier, setSelectedTier] = useState('general');
   const [quantity, setQuantity] = useState(1);

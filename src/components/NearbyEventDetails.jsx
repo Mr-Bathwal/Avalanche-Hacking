@@ -32,7 +32,7 @@ const NearbyEventDetails = () => {
     );
   }
 
-  const handlePurchaseTicket = async (tierName = "General", price = 0.5) => {
+  const handlePurchaseTicket = async (tierName = "General", _price = 0.5) => {
     try {
       const verified = await requestVerification(
         "🎟️ Secure Purchase Verification",

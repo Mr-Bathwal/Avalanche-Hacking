@@ -95,5 +95,5 @@ export const VerificationLevel = {
 
 // --- FULL DETAILED ABI for event ticket contracts ---
 // Make sure the path is correct relative to this file!
-import EventTicketFullABI from '../abifiles/eventticketabi.json';
+import EventTicketFullABI from '../abifiles/EventTicketABI.json';
 export { EventTicketFullABI };

@@ -1,56 +1,134 @@
-# React + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🎟️ TicketVerse
 
-Currently, two official plugins are available:
+### NFT ticketing on Avalanche — with anti-scalping built into the chain
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Open-6C47FF?style=for-the-badge&logo=vercel&logoColor=white)](https://mr-bathwal.github.io/Avalanche-Hacking/)
+&nbsp;
+![Avalanche](https://img.shields.io/badge/Avalanche_Fuji-E84142?style=for-the-badge&logo=avalanche&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Solidity](https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-3fb950?style=for-the-badge)
 
-## Expanding the ESLint configuration
+</div>
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+> Built at the **Avalanche × Draper Startup House Hackathon**. TicketVerse turns event
+> tickets into NFTs so they can't be duplicated or forged — and enforces **fair-resale
+> rules on-chain** so scalpers can't mark them up. Buy, verify, and resell tickets
+> from one dApp.
 
-# 🎟️ TicketVerse – NFT Ticketing Marketplace  
-
-### 🔹 Overview  
-**TicketVerse** is an NFT-based **ticketing marketplace** built at the **Avalanche Draper Startup House Hackathon**.  
-It enables **transparent, secure, and anti-scalping ticket sales** using blockchain technology.  
-
-Users can:  
-- Buy tickets as NFTs  
-- Verify authenticity  
-- Resell tickets securely  
-
----
-
-### 🚀 Features  
-- 🔗 **Blockchain-powered tickets** – Prevents duplication & fraud  
-- 🛡️ **Anti-scalping system** – Enforces fair resale rules  
-- 🌍 **Decentralized marketplace** – Built on Avalanche C-Chain  
-- 🎨 **Modern frontend** – Responsive, accessible React UI  
+**🔗 Live demo:** https://mr-bathwal.github.io/Avalanche-Hacking/
+*(read-only browsing works out of the box; buying/reselling needs a wallet on Avalanche Fuji testnet)*
 
 ---
 
-### 🛠 Tech Stack  
-![Solidity](https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white)  
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)  
-![Ethers.js](https://img.shields.io/badge/Ethers.js-3C3C3D?style=for-the-badge&logo=ethereum&logoColor=white)  
-![RainbowKit](https://img.shields.io/badge/RainbowKit-FF4785?style=for-the-badge&logo=rainbow&logoColor=white)  
-![Pinata](https://img.shields.io/badge/Pinata-00C4CC?style=for-the-badge&logo=pinata&logoColor=black)  
-![Avalanche](https://img.shields.io/badge/Avalanche-E84142?style=for-the-badge&logo=avalanche&logoColor=white)  
+## ✨ Highlights
+
+- 🎫 **Tickets are NFTs** — each ticket is an ERC-721 with a seat number, tier (VIP / normal), and venue baked in. Impossible to duplicate or counterfeit.
+- 🛡️ **Anti-scalping resale** — the marketplace caps resale at **+20% over the last sale price**, enforced in the contract, not just the UI.
+- 🧑‍⚖️ **On-chain human verification** — a `UserVerifier` contract gates sensitive actions behind a verification level, deterring bots and bulk-buying.
+- 🔨 **Fixed-price & auction resale** — list at a set price or run a timed auction with reserve price, min-bid increments, and anti-snipe extensions.
+- 💰 **Deposit-based settlement** — buyers deposit into an event escrow; purchases and bids settle against balances for safer, gas-efficient trades.
+- 📍 **Discover nearby events** — optional geolocation surfaces events happening around you.
+- 🎨 **Polished React UI** — RainbowKit wallet flows, responsive layout, skeleton loading, and toast feedback.
 
 ---
 
-### 📸 Demo Screenshots  
-**Landing Page**  
-![Landing1](https://github.com/Mr-Bathwal/hackathon/blob/main/screenshots/Screenshot%202025-08-22%20025119.png)  
-![Landing2](https://github.com/Mr-Bathwal/hackathon/blob/main/screenshots/Screenshot%202025-08-23%20155611.png)  
+## 🖼️ Screenshots
 
-
-
-
-
+| | |
+|:--:|:--:|
+| ![Landing](screenshots/Screenshot%202025-08-22%20025119.png) | ![Marketplace](screenshots/Screenshot%202025-08-23%20155611.png) |
+| ![Events](screenshots/Screenshot%202025-08-23%20123809.png) | ![Details](screenshots/Screenshot%202025-08-23%20155644.png) |
 
 ---
 
+## 🏗️ How it works
+
+```mermaid
+flowchart LR
+    O[Organizer] -->|createEvent| F[EventFactory]
+    F -->|deploys| E[EventTicket ERC-721]
+    U[Attendee] -->|verify| V[UserVerifier]
+    U -->|mint ticket| E
+    U -->|list / resell| M[TicketMarketplace]
+    M -->|+20% price cap · auctions · escrow| E
+```
+
+1. **Organizers** call `EventFactory.createEvent(...)`, which deploys a dedicated **`EventTicket`** (ERC-721) contract for that event.
+2. **Attendees** get verified through **`UserVerifier`**, then mint a ticket NFT for a chosen seat (VIP seats are priced and time-locked separately).
+3. **Resale** goes through **`TicketMarketplace`** — either a fixed-price listing or a timed auction — with the **+20% anti-inflation cap** and deposit-based settlement enforced on-chain.
+
+---
+
+## 🧰 Tech stack
+
+| Layer | Tech |
+|--|--|
+| **Chain** | Avalanche Fuji C-Chain · Solidity smart contracts |
+| **Web3** | wagmi v2 · viem · ethers v6 · RainbowKit |
+| **Frontend** | React 19 · React Router v7 · Vite 7 · Tailwind CSS v4 |
+| **Storage** | IPFS via Pinata (ticket metadata) |
+| **UX** | sonner (toasts) · geolocation · human-verification challenge |
+
+---
+
+## 📜 Deployed contracts (Fuji testnet)
+
+| Contract | Address |
+|--|--|
+| UserVerifier | [`0xD8d2…E943`](https://testnet.snowtrace.io/address/0xD8d2412e32cB638CCBdD297F75eC091f09d9E943) |
+| EventFactory | [`0xBdfD…edBe`](https://testnet.snowtrace.io/address/0xBdfD55f12efCBd84Fc5851b7e9E1931b5381edBe) |
+| TicketMarketplace | [`0x4C64…dED7`](https://testnet.snowtrace.io/address/0x4C64044450e5f5F05Bbb5c462DBc3d32B7c1dED7) |
+
+---
+
+## 🚀 Getting started
+
+**Prerequisites:** Node.js 18+, and a wallet (e.g. MetaMask/Core) on the **Avalanche Fuji** testnet with test AVAX from the [faucet](https://faucet.avax.network/).
+
+```bash
+git clone https://github.com/Mr-Bathwal/Avalanche-Hacking.git
+cd Avalanche-Hacking
+npm install
+cp .env.example .env   # optional — sensible public defaults are built in
+npm run dev            # http://localhost:5173
+```
+
+```bash
+npm run build          # production build → dist/
+npm run preview        # preview the production build
+npm run lint           # eslint (currently clean)
+```
+
+Configuration is read from environment variables (see [`.env.example`](.env.example)); no secrets live in the source.
+
+---
+
+## 📂 Project structure
+
+```
+src/
+├── pages/          # Home, EventDetails, BookSeat, BuyNFT
+├── components/     # Marketplace, AuctionChamber, CreateEvent, Profile, Nearby…
+├── lib/            # wagmi config + contract addresses/ABIs
+├── hooks/          # useGeolocation, useHumanVerification
+├── utils/          # ethereum/web3 helpers, Pinata/IPFS, sample assets
+└── abifiles/       # contract ABIs (JSON)
+```
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Publish the Solidity contract sources alongside the frontend
+- [ ] Move ticket images fully on-chain / to a dedicated IPFS gateway
+- [ ] Secondary-royalty split to organizers on every resale
+- [ ] Mainnet (Avalanche C-Chain) deployment
+
+---
+
+## 📄 License
+
+MIT © [Gourav Bathwal](https://github.com/Mr-Bathwal)

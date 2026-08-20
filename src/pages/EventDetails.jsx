@@ -198,7 +198,7 @@ export default function EventDetails() {
     setLoading(false);
   };
 
-  const buyTicket = async (tokenId, price) => {
+  const buyTicket = async (tokenId, _price) => {
     setLoading(true);
     try {
       const provider = new BrowserProvider(window.ethereum);
@@ -241,11 +241,6 @@ export default function EventDetails() {
   }
 
   const isOrganizer = isConnected && address && address.toLowerCase() === eventInfo.organizer.toLowerCase();
-  const eventStatus = eventInfo.eventCancelled ? 'Cancelled' :
-                      eventInfo.eventCompleted ? 'Completed' :
-                      Date.now() > eventInfo.endTime.getTime() ? 'Ended' :
-                      Date.now() > eventInfo.startTime.getTime() ? 'Live' : 'Upcoming';
-
   return (
     <div className="event-details-container">
       <div className="form-page" style={{padding:0}}>

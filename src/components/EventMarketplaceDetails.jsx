@@ -6,8 +6,9 @@ import {
   CONTRACT_ADDRESSES, 
   EVENT_FACTORY_ABI, 
   EVENT_TICKET_ABI, 
-  TICKET_MARKETPLACE_ABI 
+  TICKET_MARKETPLACE_ABI
 } from '../lib/contracts';
+import { sampleNFTs } from '../utils/sampleAssets';
 
 export default function EventMarketplace() {
   const { address, isConnected } = useAccount();
@@ -15,7 +16,7 @@ export default function EventMarketplace() {
   const [userNFTs, setUserNFTs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('marketplace'); // 'marketplace' or 'mynfts'
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     eventType: 'all',
     priceRange: 'all',
     saleType: 'all',
@@ -67,7 +68,7 @@ export default function EventMarketplace() {
                 try {
                   const response = await fetch(tokenURI);
                   metadata = await response.json();
-                } catch {}
+                } catch { /* metadata unavailable — leave empty */ }
 
                 itemsData.push({
                   eventAddress,
@@ -81,8 +82,8 @@ export default function EventMarketplace() {
                   saleType: Number(listing.saleType), // 0 = FIXED_PRICE, 1 = AUCTION
                 });
               }
-            } catch (err) {
-              // Skip if no listing
+            } catch {
+              // no active listing for this token — skip
             }
           }
         } catch (err) {
@@ -126,7 +127,7 @@ export default function EventMarketplace() {
               try {
                 const response = await fetch(tokenURI);
                 metadata = await response.json();
-              } catch {}
+              } catch { /* metadata unavailable — leave empty */ }
 
               userNFTData.push({
                 eventAddress,
@@ -179,7 +180,7 @@ export default function EventMarketplace() {
     setLoading(false);
   };
 
-  const listItem = async (nft, price, saleType = 0) => {
+  const listItem = async (nft, price, _saleType = 0) => {
     setLoading(true);
     try {
       const provider = new BrowserProvider(window.ethereum);
@@ -206,7 +207,7 @@ export default function EventMarketplace() {
             }
           }
         }
-      } catch {}
+      } catch { /* price-cap check is best-effort */ }
 
       // First approve marketplace to handle the NFT
       const isApproved = await eventContract.isApprovedForAll(address, CONTRACT_ADDRESSES.TICKET_MARKETPLACE);
@@ -316,7 +317,6 @@ export default function EventMarketplace() {
   );
 
   function TrendingSamples() {
-    const { sampleNFTs } = require('../utils/sampleAssets');
     return (
       <div className="listings-grid">
         {sampleNFTs.map((s)=> (

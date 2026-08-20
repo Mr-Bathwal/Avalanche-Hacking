@@ -4,7 +4,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { fetchAllNearbyEvents, getCityFromCoordinates, fetchEventsByCity } from "../utils/nearbyEvents";
 
 const NearbyEvents = () => {
-  const { location, error, loading, permission, getCurrentLocation, resetLocation } = useGeolocation();
+  const { location, error, loading, getCurrentLocation, resetLocation } = useGeolocation();
   const [nearbyEvents, setNearbyEvents] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
   const [maxDistance, setMaxDistance] = useState(50); // Default to 50km
@@ -18,6 +18,7 @@ const NearbyEvents = () => {
       fetchEvents();
       getUserCity();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, isEnabled, maxDistance]);
 
   const fetchEvents = async () => {
@@ -126,12 +127,6 @@ const NearbyEvents = () => {
     });
   };
 
-  const getRadiusLabel = (radius) => {
-    if (radius >= 500) return `${radius}km (State-wide)`;
-    if (radius >= 200) return `${radius}km (Regional)`;
-    if (radius >= 100) return `${radius}km (Metro Area)`;
-    return `${radius}km (Local)`;
-  };
 
   return (
     <div className="section nearby-events-section">

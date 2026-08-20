@@ -23,6 +23,7 @@ export default function Profile() {
     if (isConnected && address) {
       fetchProfile();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, address]);
 
   const fetchProfile = async () => {

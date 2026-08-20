@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 
 const HumanVerification = ({ 
   isOpen, 
@@ -16,7 +16,7 @@ const HumanVerification = ({
   const [requiredPattern, setRequiredPattern] = useState([]);
   const [attempts, setAttempts] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [, setIsDragging] = useState(false);
 
   // Generate math problem
   useEffect(() => {

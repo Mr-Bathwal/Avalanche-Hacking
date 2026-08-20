@@ -40,6 +40,7 @@ export default function Dashboard() {
         walletAVAX: "0",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, address]);
 
   async function fetchDashboardData() {

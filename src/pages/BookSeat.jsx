@@ -7,7 +7,7 @@ import { EVENT_TICKET_ABI } from '../lib/contracts';
 
 export default function BookSeat() {
   const { eventAddress } = useParams();
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const [eventInfo, setEventInfo] = useState(null);
   const [seats, setSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);

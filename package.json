@@ -1,7 +1,7 @@
 {
-  "name": "tickets",
+  "name": "ticketverse",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -42,9 +42,22 @@
     "tailwindcss": "^4.1.12",
     "vite": "^7.1.2"
   },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
-  "main": "eslint.config.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "description": "NFT-based ticketing marketplace on Avalanche — anti-scalping resale rules, on-chain human verification, and secure fixed-price & auction resale.",
+  "keywords": [
+    "nft",
+    "ticketing",
+    "avalanche",
+    "web3",
+    "blockchain",
+    "solidity",
+    "react",
+    "vite"
+  ],
+  "author": "Gourav Bathwal",
+  "license": "MIT",
+  "homepage": "https://mr-bathwal.github.io/Avalanche-Hacking/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mr-Bathwal/Avalanche-Hacking.git"
+  }
 }

@@ -6,7 +6,7 @@ import { CONTRACT_ADDRESSES, EVENT_FACTORY_ABI, EVENT_TICKET_ABI } from '../lib/
 import { sampleCollections } from '../utils/sampleAssets';
 
 export default function Home() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { BrowserProvider, Contract, formatEther, parseEther } from "ethers";
-import { useNavigate } from "react-router-dom";
 import {
   CONTRACT_ADDRESSES,
   USER_VERIFICATION_ABI,
@@ -14,17 +13,16 @@ const EVENT_FACTORY_ADDRESS = CONTRACT_ADDRESSES.EVENT_FACTORY;
 const MARKETPLACE_ADDRESS = CONTRACT_ADDRESSES.TICKET_MARKETPLACE;
 
 export default function AuctionChamber() {
-  const navigate = useNavigate();
 
   // State
-  const [provider, setProvider] = useState(null);
+  const [, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [account, setAccount] = useState("");
   const [network, setNetwork] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [eventFactory, setEventFactory] = useState(null);
 
-  const [nfts, setNfts] = useState([]);
+  const [, setNfts] = useState([]);
   const [auctions, setAuctions] = useState([]);
   const [displayAuctions, setDisplayAuctions] = useState([]);
   const [heldNfts, setHeldNfts] = useState([]);
@@ -85,14 +83,6 @@ export default function AuctionChamber() {
     if (!timestamp) return "--";
     const date = new Date(Number(timestamp) * 1000);
     return date.toLocaleString();
-  }
-  function formatETH(val) {
-    if (!val) return "0 AVAX";
-    try {
-      return formatEther(val) + " AVAX";
-    } catch {
-      return val + " AVAX";
-    }
   }
 
   // Defensive asset loader
@@ -204,7 +194,7 @@ export default function AuctionChamber() {
                   ? Number(formatEther(auctionInfo.highestBid))
                   : 0;
               auctionEnd = auctionInfo.endTime ? Number(auctionInfo.endTime) : 0;
-            } catch {}
+            } catch { /* keep defaults if auction info is unavailable */ }
             const nftObj = {
               id: `${eventAddress}_${tokenId}`,
               eventAddress,
@@ -310,12 +300,6 @@ export default function AuctionChamber() {
     setLoading(false);
   }
 
-  function handleViewDetails(auction) {
-    const slug = auction.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    navigate(`/event-marketplace/${slug}`, {
-      state: { event: auction.name, auctions: auctions.filter((a) => a.name === auction.name) },
-    });
-  }
 
   useEffect(() => {
     connectWallet();
