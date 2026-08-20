@@ -1,29 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import { BrowserProvider, Contract, formatEther } from 'ethers';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Link } from 'react-router-dom';
+import { BrowserProvider, Contract, formatEther } from 'ethers';
 import { CONTRACT_ADDRESSES, EVENT_FACTORY_ABI, EVENT_TICKET_ABI } from '../lib/contracts';
 import { sampleCollections } from '../utils/sampleAssets';
+import TicketHero3D from '../components/TicketHero3D';
 
 export default function Home() {
   const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isConnected) {
-      fetchEvents();
-    }
+    if (isConnected) fetchEvents();
   }, [isConnected]);
+
+  // Reveal-on-scroll for the story sections
+  useEffect(() => {
+    const els = document.querySelectorAll('.lp-reveal');
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        }),
+      { threshold: 0.16 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [isConnected, loading]);
 
   const fetchEvents = async () => {
     setLoading(true);
     try {
       const provider = new BrowserProvider(window.ethereum);
       const eventFactory = new Contract(CONTRACT_ADDRESSES.EVENT_FACTORY, EVENT_FACTORY_ABI, provider);
-
       const eventAddresses = await eventFactory.getAllDeployedEvents();
-
       const eventsData = await Promise.all(
         eventAddresses.map(async (eventAddress) => {
           try {
@@ -45,13 +61,11 @@ export default function Home() {
               price: formatEther(baseMintPrice),
               totalSeats: Number(maxSupply),
             };
-          } catch (err) {
-            console.error('Error fetching event data:', err);
+          } catch {
             return null;
           }
         })
       );
-
       setEvents(eventsData.filter(Boolean));
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -59,240 +73,199 @@ export default function Home() {
     setLoading(false);
   };
 
+  const connect = () => openConnectModal?.();
+
+  const FEATURES = [
+    { icon: '🎫', title: 'Every ticket is an NFT', body: 'Each seat is an ERC-721 with the tier, venue and price baked in — impossible to counterfeit or duplicate.' },
+    { icon: '🛡️', title: 'Resale capped on-chain', body: 'Scalpers can’t mark tickets up. The contract rejects any resale above +20% of the last sale price.' },
+    { icon: '⚡', title: 'Fair auctions & escrow', body: 'List at a fixed price or run an anti-snipe auction. Deposits settle in escrow, so trades stay safe.' },
+  ];
+
   return (
-    <div className="app-container">
-      <div className="main-content">
-        {/* Header */}
-        <header className="header">
-          <div className="search-container">
-            <span className="search-icon">🔍</span>
-            <input type="text" className="search-input" placeholder="Search TicketVerse" />
-          </div>
-          <div className="header-actions">
-            {!isConnected && (
-              <button className="connect-wallet-btn">Connect Wallet</button>
+    <div className="lp">
+      {/* ───────── HERO ───────── */}
+      <section className="lp-hero">
+        <TicketHero3D />
+        <div className="lp-hero-overlay" />
+        <div className="lp-hero-content">
+          <span className="lp-eyebrow">Avalanche · On-chain ticketing</span>
+          <h1 className="lp-title">
+            Tickets that<br /><span className="grad">can’t be scalped.</span>
+          </h1>
+          <p className="lp-sub">
+            TicketVerse mints every ticket as an NFT and caps resale at <b>+20%</b> — enforced on-chain,
+            not on trust. Buy, verify and resell from one dApp.
+          </p>
+          <div className="lp-cta">
+            {isConnected ? (
+              <a href="#events" className="lp-btn primary">Explore events ↓</a>
+            ) : (
+              <button className="lp-btn primary" onClick={connect}>Connect wallet</button>
             )}
+            <Link to="/create-event" className="lp-btn ghost">Create an event</Link>
           </div>
-        </header>
+          <div className="lp-scrollcue">▼ &nbsp;scroll to see how it works</div>
+        </div>
+      </section>
 
-        <div className="content-layout">
-          <div className="main-panel">
-            {/* Hero Section */}
-            <div className="hero-collection">
-              <div className="hero-content">
-                <div className="collection-header">
-                  <div className="collection-avatar" style={{background: 'linear-gradient(135deg, #667eea, #764ba2)'}}></div>
-                  <div className="collection-info">
-                    <h1>
-                      TicketVerse
-                      <span className="verified-badge">✓</span>
-                    </h1>
-                    <p className="collection-by">Decentralized Event Ticketing & NFT Marketplace</p>
-                  </div>
-                </div>
-
-                {!isConnected ? (
-                  <div style={{textAlign: 'center', marginTop: '40px'}}>
-                    <h3 style={{marginBottom: '16px'}}>Connect your wallet to explore</h3>
-                    <button className="connect-wallet-btn">Connect Wallet</button>
-                  </div>
-                ) : (
-                  <div className="collection-stats">
-                    <div className="stat-item">
-                      <div className="stat-label">Total Events</div>
-                      <div className="stat-value">{events.length}</div>
-                    </div>
-                    <div className="stat-item">
-                      <div className="stat-label">Active</div>
-                      <div className="stat-value">{events.filter(e => new Date() < e.startTime).length}</div>
-                    </div>
-                    <div className="stat-item">
-                      <div className="stat-label">Live Now</div>
-                      <div className="stat-value">{events.filter(e => new Date() >= e.startTime && new Date() <= e.endTime).length}</div>
-                    </div>
-                    <div className="stat-item">
-                      <div className="stat-label">Platform</div>
-                      <div className="stat-value eth">Avalanche</div>
-                    </div>
-                  </div>
-                )}
-              </div>
+      {/* ───────── STORY ───────── */}
+      <section className="lp-section">
+        <p className="lp-kicker lp-reveal">Why it’s different</p>
+        <h2 className="lp-h2 lp-reveal">Anti-scalping, built into the chain.</h2>
+        <div className="lp-grid3">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="lp-card lp-reveal">
+              <div className="lp-card-ico">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
             </div>
+          ))}
+        </div>
+      </section>
 
-            {isConnected && (
-              <>
-                {/* Section Header */}
-                <section className="section-header">
-                  <div>
-                    <h2 className="section-title">Live Events</h2>
-                    <p className="section-subtitle">Discover and book tickets for amazing events</p>
-                  </div>
-                  <div className="section-filters">
-                    <Link to="/create-event" className="filter-btn active">Create Event</Link>
-                    <button className="filter-btn">All Events</button>
-                    <button className="filter-btn">This Week</button>
-                  </div>
-                </section>
+      {/* ───────── STATS ───────── */}
+      <section className="lp-section">
+        <div className="lp-stats lp-reveal">
+          <div className="lp-stat"><b>+20%</b><span>Max resale markup</span></div>
+          <div className="lp-stat"><b>{isConnected ? events.length : '∞'}</b><span>Events on-chain</span></div>
+          <div className="lp-stat"><b>ERC-721</b><span>Every ticket</span></div>
+          <div className="lp-stat"><b>Fuji</b><span>Avalanche testnet</span></div>
+        </div>
+      </section>
 
-                {/* Events Grid */}
-                {loading ? (
-                  <div className="loading">
-                    <div className="spinner"></div>
-                  </div>
-                ) : events.length === 0 ? (
-                  <div className="hero-collection" style={{textAlign: 'center', padding: '60px 32px'}}>
-                    <div className="hero-content">
-                      <h3>No events found</h3>
-                      <p style={{marginBottom: '24px', color: '#8a8b8f'}}>Be the first to create an amazing event!</p>
-                      <Link to="/create-event" className="connect-wallet-btn">
-                        Create Event
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="collections-grid">
-                      {events.map((event, idx) => {
-                        const showcase = sampleCollections[idx % sampleCollections.length];
-                        return (
-                          <div key={event.address} className="collection-card">
-                            <div className="collection-preview">
-                              <div className="collection-main-image" style={{ backgroundImage: `url(${showcase.tiles[0]})`, backgroundSize: 'cover' }}></div>
-                              <div className="collection-thumbnails">
-                                <div className="thumbnail" style={{ backgroundImage: `url(${showcase.tiles[1]})`, backgroundSize: 'cover' }}></div>
-                                <div className="thumbnail" style={{ backgroundImage: `url(${showcase.tiles[2]})`, backgroundSize: 'cover' }}></div>
-                                <div className="thumbnail"></div>
-                                <div className="thumbnail"></div>
-                              </div>
-                            </div>
-                            <div className="collection-card-info">
-                              <h3>
-                                {event.venue}
-                                <span className="verified-badge">✓</span>
-                              </h3>
-                              <p className="collection-card-subtitle">{event.description}</p>
-                              <div className="collection-card-stats">
-                                <div className="card-stat">
-                                  <div className="card-stat-label">Start Date</div>
-                                  <div className="card-stat-value">{event.startTime.toLocaleDateString()}</div>
-                                </div>
-                                <div className="card-stat">
-                                  <div className="card-stat-label">Price From</div>
-                                  <div className="card-stat-value">{Number(event.price).toFixed(3)} AVAX</div>
-                                </div>
-                                <div className="card-stat">
-                                  <div className="card-stat-label">Total Seats</div>
-                                  <div className="card-stat-value">{event.totalSeats}</div>
-                                </div>
-                              </div>
-                              <div style={{display: 'flex', gap: '8px', marginTop: '16px'}}>
-                                <Link to={`/event/${event.address}`} className="filter-btn" style={{flex: 1, textAlign: 'center'}}>
-                                  View Event
-                                </Link>
-                                <Link to={`/book-seat/${event.address}`} className="connect-wallet-btn" style={{flex: 1, textAlign: 'center', fontSize: '14px', padding: '8px 16px'}}>
-                                  Book Ticket
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Magic Eden-inspired banner row (sample collections) */}
-                    <div className="hero-collection" style={{marginTop: 8}}>
-                      <div className="hero-content">
-                        <div className="collection-header">
-                          <div className="collection-avatar" style={{backgroundImage: `url(${sampleCollections[0].banner})`, backgroundSize: 'cover'}}></div>
-                          <div className="collection-info">
-                            <h1>Featured Collections <span className="verified-badge">★</span></h1>
-                            <p className="collection-by">Curated tickets & passes</p>
-                          </div>
-                        </div>
-                        <div className="collections-grid">
-                          {sampleCollections.map((c) => (
-                            <div key={c.id} className="collection-card">
-                              <div className="collection-preview">
-                                <div className="collection-main-image" style={{ backgroundImage:`url(${c.banner})`, backgroundSize:'cover' }}></div>
-                                <div className="collection-thumbnails">
-                                  {c.tiles.map((t, i) => (
-                                    <div key={i} className="thumbnail" style={{ backgroundImage:`url(${t})`, backgroundSize:'cover' }}></div>
-                                  ))}
-                                </div>
-                              </div>
-                              <div className="collection-card-info">
-                                <h3>{c.title} <span className="verified-badge">✓</span></h3>
-                                <p className="collection-card-subtitle">{c.subtitle}</p>
-                                <div className="collection-card-stats">
-                                  <div className="card-stat"><div className="card-stat-label">Floor</div><div className="card-stat-value">{c.stats.floor} AVAX</div></div>
-                                  <div className="card-stat"><div className="card-stat-label">Listed</div><div className="card-stat-value">{c.stats.listed}</div></div>
-                                  <div className="card-stat"><div className="card-stat-label">Volume</div><div className="card-stat-value">{c.stats.volume} AVAX</div></div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
+      {/* ───────── CONNECTED: EVENTS ───────── */}
+      {isConnected && (
+        <section id="events" className="lp-section">
+          <div className="lp-events-head lp-reveal">
+            <div>
+              <p className="lp-kicker" style={{ margin: 0 }}>Live now</p>
+              <h2 className="lp-h2" style={{ margin: '6px 0 0' }}>Events</h2>
+            </div>
+            <Link to="/create-event" className="lp-btn primary sm">Create event</Link>
           </div>
 
-          {/* Right Panel - Quick Links */}
-          {isConnected && (
-            <div className="right-panel">
-              <div className="trending-panel">
-                <div className="panel-header">
-                  <h3 className="panel-title">Quick Links</h3>
-                </div>
-                <div className="trending-list">
-                  <Link to="/dashboard" className="trending-item" style={{textDecoration: 'none', color: 'inherit'}}>
-                    <div className="trending-rank">📊</div>
-                    <div className="trending-info">
-                      <div className="trending-name">Dashboard</div>
-                      <div className="trending-floor">
-                        <span style={{fontSize: '12px', color: '#8a8b8f'}}>View your stats</span>
+          {loading ? (
+            <div className="lp-grid3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="lp-card lp-skeleton" />
+              ))}
+            </div>
+          ) : events.length === 0 ? (
+            <div className="lp-empty lp-reveal">
+              <h3>No events yet</h3>
+              <p>Be the first to launch one.</p>
+              <Link to="/create-event" className="lp-btn primary sm">Create the first event</Link>
+            </div>
+          ) : (
+            <div className="lp-grid3">
+              {events.map((event, idx) => {
+                const showcase = sampleCollections[idx % sampleCollections.length];
+                return (
+                  <Link to={`/event/${event.address}`} key={event.address} className="lp-event lp-reveal">
+                    <div className="lp-event-img" style={{ backgroundImage: `url(${showcase.tiles[0]})` }} />
+                    <div className="lp-event-body">
+                      <h3>{event.venue} <span className="lp-verified">✓</span></h3>
+                      <p className="lp-event-desc">{event.description}</p>
+                      <div className="lp-event-meta">
+                        <span>{event.startTime.toLocaleDateString()}</span>
+                        <span className="lp-price">{Number(event.price).toFixed(3)} AVAX</span>
                       </div>
                     </div>
                   </Link>
-                  
-                  <Link to="/marketplace" className="trending-item" style={{textDecoration: 'none', color: 'inherit'}}>
-                    <div className="trending-rank">🛍️</div>
-                    <div className="trending-info">
-                      <div className="trending-name">Marketplace</div>
-                      <div className="trending-floor">
-                        <span style={{fontSize: '12px', color: '#8a8b8f'}}>Buy & sell tickets</span>
-                      </div>
-                    </div>
-                  </Link>
-
-                  <Link to="/auction-chamber" className="trending-item" style={{textDecoration: 'none', color: 'inherit'}}>
-                    <div className="trending-rank">⚡</div>
-                    <div className="trending-info">
-                      <div className="trending-name">Auction Chamber</div>
-                      <div className="trending-floor">
-                        <span style={{fontSize: '12px', color: '#8a8b8f'}}>Bid on exclusive tickets</span>
-                      </div>
-                    </div>
-                  </Link>
-
-                  <Link to="/profile" className="trending-item" style={{textDecoration: 'none', color: 'inherit'}}>
-                    <div className="trending-rank">👤</div>
-                    <div className="trending-info">
-                      <div className="trending-name">Profile</div>
-                      <div className="trending-floor">
-                        <span style={{fontSize: '12px', color: '#8a8b8f'}}>Manage account</span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
+                );
+              })}
             </div>
           )}
-        </div>
-      </div>
+        </section>
+      )}
+
+      {/* ───────── NOT CONNECTED: FINAL CTA ───────── */}
+      {!isConnected && (
+        <section className="lp-section">
+          <div className="lp-final lp-reveal">
+            <h2>Ready to look inside?</h2>
+            <p>Connect a wallet on Avalanche Fuji to browse events, mint tickets and trade.</p>
+            <button className="lp-btn primary" onClick={connect}>Connect wallet</button>
+          </div>
+        </section>
+      )}
+
+      <style>{`
+        .lp { --v:#a78bfa; --b:#60a5fa; --t:#5eead4; --void:#08090f; --text:#c9cee0; --muted:#828aa3; --line:rgba(255,255,255,.09);
+              position:relative; }
+        .lp .grad { background:linear-gradient(100deg,#c9b6ff,#9fc3ff 45%,#9df0e4 80%);
+              -webkit-background-clip:text;background-clip:text;color:transparent; }
+
+        /* hero */
+        .lp-hero { position:relative; min-height:92vh; display:flex; align-items:center; overflow:hidden;
+              background:radial-gradient(120% 100% at 70% -10%, #141a33 0%, #0b0d18 55%, var(--void) 100%); }
+        .lp-canvas { position:absolute; inset:0; z-index:0; }
+        .lp-canvas canvas { display:block; width:100% !important; height:100% !important; }
+        .lp-hero-overlay { position:absolute; inset:0; z-index:1; pointer-events:none;
+              background:linear-gradient(90deg, rgba(8,9,15,.85) 0%, rgba(8,9,15,.35) 45%, rgba(8,9,15,0) 70%); }
+        .lp-hero-content { position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:0 32px; width:100%; }
+        .lp-eyebrow { font-size:13px; letter-spacing:3px; text-transform:uppercase; color:var(--b); font-weight:600; }
+        .lp-title { font-size:clamp(40px,7vw,84px); line-height:1.02; font-weight:800; margin:14px 0 0; color:#eef2ff; letter-spacing:-.02em; }
+        .lp-sub { max-width:540px; margin-top:20px; font-size:clamp(15px,2vw,19px); color:var(--text); line-height:1.6; }
+        .lp-sub b { color:#fff; }
+        .lp-cta { display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; }
+        .lp-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:15px; font-weight:600;
+              padding:14px 26px; border-radius:40px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:#eef2ff;
+              cursor:pointer; transition:.2s; text-decoration:none; }
+        .lp-btn.sm { padding:10px 18px; font-size:14px; }
+        .lp-btn.primary { border-color:transparent; background:linear-gradient(120deg,var(--v),var(--b)); color:#08090f; }
+        .lp-btn:hover { transform:translateY(-2px); box-shadow:0 14px 34px -14px rgba(96,165,250,.6); }
+        .lp-scrollcue { margin-top:48px; font-size:12px; letter-spacing:2px; color:var(--muted); animation:lpbob 2.4s ease-in-out infinite; }
+        @keyframes lpbob { 50% { transform:translateY(6px); } }
+
+        /* sections */
+        .lp-section { max-width:1100px; margin:0 auto; padding:80px 32px; }
+        .lp-kicker { font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--v); font-weight:600; margin:0 0 8px; }
+        .lp-h2 { font-size:clamp(26px,4vw,42px); font-weight:800; color:#eef2ff; margin:0 0 34px; letter-spacing:-.02em; }
+        .lp-grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+        .lp-card { background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:18px; padding:26px;
+              transition:.25s; }
+        .lp-card:hover { transform:translateY(-4px); border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.05); }
+        .lp-card-ico { font-size:30px; margin-bottom:14px; }
+        .lp-card h3 { margin:0 0 8px; font-size:19px; color:#eef2ff; }
+        .lp-card p { margin:0; color:var(--muted); font-size:14.5px; line-height:1.6; }
+
+        .lp-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; background:rgba(255,255,255,.03);
+              border:1px solid var(--line); border-radius:18px; padding:30px; }
+        .lp-stat { text-align:center; }
+        .lp-stat b { display:block; font-size:clamp(24px,4vw,38px); font-weight:800;
+              background:linear-gradient(120deg,var(--v),var(--t)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+        .lp-stat span { font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); }
+
+        .lp-events-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:26px; }
+        .lp-event { display:block; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:18px;
+              overflow:hidden; text-decoration:none; color:inherit; transition:.25s; }
+        .lp-event:hover { transform:translateY(-5px); border-color:rgba(255,255,255,.2); }
+        .lp-event-img { height:170px; background-size:cover; background-position:center; }
+        .lp-event-body { padding:18px; }
+        .lp-event-body h3 { margin:0 0 6px; font-size:17px; color:#eef2ff; }
+        .lp-event-desc { margin:0 0 14px; color:var(--muted); font-size:13.5px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .lp-event-meta { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); }
+        .lp-price { color:var(--t); font-weight:600; }
+        .lp-verified { color:var(--b); font-size:13px; }
+
+        .lp-empty, .lp-final { text-align:center; background:rgba(255,255,255,.03); border:1px solid var(--line);
+              border-radius:20px; padding:56px 24px; }
+        .lp-empty h3, .lp-final h2 { color:#eef2ff; margin:0 0 8px; }
+        .lp-empty p, .lp-final p { color:var(--muted); margin:0 0 22px; }
+
+        .lp-skeleton { height:220px; position:relative; overflow:hidden; }
+        .lp-skeleton::after { content:''; position:absolute; inset:0;
+              background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent); animation:lpsh 1.3s infinite; }
+        @keyframes lpsh { 100% { transform:translateX(100%); } }
+
+        .lp-reveal { opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease; }
+        .lp-reveal.in { opacity:1; transform:none; }
+
+        @media (max-width:820px){ .lp-grid3{ grid-template-columns:1fr 1fr; } .lp-stats{ grid-template-columns:1fr 1fr; } }
+        @media (max-width:560px){ .lp-grid3{ grid-template-columns:1fr; } .lp-hero-overlay{ background:linear-gradient(180deg, rgba(8,9,15,.4), rgba(8,9,15,.85)); } }
+        @media (prefers-reduced-motion:reduce){ .lp-reveal{ opacity:1; transform:none; } .lp-scrollcue{ animation:none; } }
+      `}</style>
     </div>
   );
 }

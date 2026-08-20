@@ -18,7 +18,9 @@ export const checkNetwork = async () => {
   const provider = new BrowserProvider(window.ethereum);
   const network = await provider.getNetwork();
 
-  if (network.chainId !== NETWORK_CONFIG.chainId) {
+  // ethers v6 returns chainId as a bigint; compare numerically to avoid a
+  // bigint-vs-number mismatch that would always report the "wrong" network.
+  if (Number(network.chainId) !== NETWORK_CONFIG.chainId) {
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
@@ -64,5 +66,5 @@ export const getExplorerUrl = (txHash) => {
 };
 
 export const getAddressUrl = (address) => {
-  return `${NETWORK_CONFIG.blockExplorerUrls}/address/${address}`;
+  return `${NETWORK_CONFIG.blockExplorerUrls[0]}/address/${address}`;
 };
