@@ -177,5 +177,5 @@ export default function TicketHero3D() {
     };
   }, []);
 
-  return <div ref={mountRef} className="lp-canvas" aria-hidden="true" />;
+  return <div ref={mountRef} className="lp-canvas" aria-hidden="true" style={{ position: "absolute", inset: 0 }} />;
 }

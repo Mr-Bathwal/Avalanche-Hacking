@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { BrowserProvider, Contract, formatEther, parseEther } from 'ethers';
 import { toast } from 'sonner';
 import { EVENT_TICKET_ABI } from '../lib/contracts';
+import SeatMap3D from '../components/SeatMap3D';
 
 export default function BookSeat() {
   const { eventAddress } = useParams();
@@ -114,7 +115,12 @@ export default function BookSeat() {
 
       <div className="seat-selection">
         <div className="seat-map">
-          <div className="stage">STAGE</div>
+          <SeatMap3D
+            seats={seats}
+            selectedNumber={selectedSeat?.number}
+            onSelect={(seat) => setSelectedSeat(seat)}
+          />
+          <div className="grid-label">🖱️ Click a seat above, or pick from the grid</div>
           <div className="seats-grid">
             {seats.map((seat) => (
               <div
@@ -176,6 +182,9 @@ export default function BookSeat() {
         .event-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
         .seat-selection { display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
         .seat-map { background: #2d2d2d; padding: 2rem; border-radius: 12px; border:1px solid #404040; }
+        .seat3d { width:100%; height:420px; border-radius:12px; overflow:hidden; margin-bottom:12px;
+                  background:radial-gradient(120% 100% at 50% 0%, #141a33, #0b0d18); border:1px solid #2a3350; }
+        .grid-label { font-size:12px; letter-spacing:1px; text-transform:uppercase; color:#8a8b8f; margin:2px 0 14px; }
         .stage { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; font-weight: bold; }
         .seats-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-bottom: 2rem; }
         .seat { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; }

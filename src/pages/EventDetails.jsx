@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { BrowserProvider, Contract, formatEther } from 'ethers';
 import { toast } from 'sonner';
 import { EVENT_TICKET_ABI, TICKET_MARKETPLACE_ABI, CONTRACT_ADDRESSES } from '../lib/contracts';
+import TicketHero3D from '../components/TicketHero3D';
 
 export default function EventDetails() {
   const { eventAddress } = useParams();
@@ -244,6 +245,18 @@ export default function EventDetails() {
   return (
     <div className="event-details-container">
       <div className="form-page" style={{padding:0}}>
+        {/* 3D ticket banner */}
+        <div style={{ position:'relative', height:240, borderRadius:16, overflow:'hidden', marginBottom:16,
+              background:'radial-gradient(120% 120% at 72% -10%, #141a33, #0b0d18)', border:'1px solid #2a3350' }}>
+          <TicketHero3D />
+          <div style={{ position:'absolute', inset:0, zIndex:1, pointerEvents:'none',
+              background:'linear-gradient(90deg, rgba(8,9,15,.82) 0%, rgba(8,9,15,.2) 55%, rgba(8,9,15,0) 78%)' }} />
+          <div style={{ position:'absolute', left:28, bottom:22, zIndex:2 }}>
+            <div style={{ fontSize:12, letterSpacing:3, textTransform:'uppercase', color:'#60a5fa', fontWeight:600 }}>Avalanche · NFT Ticket</div>
+            <h1 style={{ margin:'6px 0 0', fontSize:'clamp(24px,4vw,40px)', color:'#eef2ff', letterSpacing:'-.02em' }}>{eventInfo.venue}</h1>
+          </div>
+        </div>
+
         <div className="card" style={{marginBottom:16}}>
           <div className="event-header-card">
             <div className="event-cover"/>
