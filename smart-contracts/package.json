@@ -1,0 +1,21 @@
+{
+  "name": "ticketverse-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TicketVerse smart contracts — NFT event ticketing on Avalanche with on-chain anti-scalping.",
+  "license": "MIT",
+  "author": "Gourav Bathwal",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:fuji": "hardhat run scripts/deploy.js --network fuji"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.10"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0"
+  }
+}

@@ -82,6 +82,8 @@ flowchart LR
 | EventFactory | [`0xBdfD…edBe`](https://testnet.snowtrace.io/address/0xBdfD55f12efCBd84Fc5851b7e9E1931b5381edBe) |
 | TicketMarketplace | [`0x4C64…dED7`](https://testnet.snowtrace.io/address/0x4C64044450e5f5F05Bbb5c462DBc3d32B7c1dED7) |
 
+**Contract source + tests:** [`smart-contracts/`](smart-contracts/) — Hardhat + OpenZeppelin v5, with a passing test suite covering minting, the anti-scalping cap, and royalty settlement. Redeploy with `npm run deploy:fuji` and paste the new addresses into `src/lib/contracts.js`.
+
 ---
 
 ## 🚀 Getting started
@@ -122,9 +124,9 @@ src/
 
 ## 🗺️ Roadmap
 
-- [ ] Publish the Solidity contract sources alongside the frontend
+- [x] Solidity contract sources + tests — see [`smart-contracts/`](smart-contracts/)
+- [x] Secondary-royalty split to organizers on every resale
 - [ ] Move ticket images fully on-chain / to a dedicated IPFS gateway
-- [ ] Secondary-royalty split to organizers on every resale
 - [ ] Mainnet (Avalanche C-Chain) deployment
 
 ---
