@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { BrowserProvider, Contract } from 'ethers';
+import { toast } from 'sonner';
 import { CONTRACT_ADDRESSES, USER_VERIFICATION_ABI } from '../lib/contracts';
 
 export function useHumanVerification() {
@@ -43,10 +44,33 @@ export function useHumanVerification() {
   };
 
   const requestVerification = async () => {
-    return {
-      success: false,
-      message: 'Verification requests must be submitted manually. Please contact support.',
-    };
+    if (!isConnected || !address) {
+      return { success: false, message: 'Connect your wallet first.' };
+    }
+    setLoading(true);
+    try {
+      const provider = new BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const userVerification = new Contract(
+        CONTRACT_ADDRESSES.USER_VERIFIER,
+        USER_VERIFICATION_ABI,
+        signer
+      );
+
+      const tx = await userVerification.verifyUser(address);
+      toast.loading('Confirming verification on-chain…', { id: 'verify' });
+      await tx.wait();
+      toast.success('You are verified ✅', { id: 'verify' });
+
+      await checkVerificationStatus();
+      return { success: true, message: 'Verified successfully.' };
+    } catch (error) {
+      const message = error?.shortMessage || error?.reason || 'Verification failed.';
+      toast.error(message, { id: 'verify' });
+      return { success: false, message };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isVerifiedAndActive = () => {

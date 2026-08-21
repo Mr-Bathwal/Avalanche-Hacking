@@ -1,0 +1,90 @@
+/* Shared "showcase" design language — polished cards, 3D banner, badges.
+   Used across the demo (mock-data) experience so screens feel like one system. */
+:root {
+  --sc-void: #08090f;
+  --sc-violet: #a78bfa;
+  --sc-blue: #60a5fa;
+  --sc-teal: #5eead4;
+  --sc-text: #c9cee0;
+  --sc-head: #eef2ff;
+  --sc-muted: #828aa3;
+  --sc-line: rgba(255, 255, 255, 0.09);
+  --sc-card: rgba(255, 255, 255, 0.035);
+  --sc-card-hi: rgba(255, 255, 255, 0.06);
+}
+
+/* 3D banner */
+.sc-banner {
+  position: relative;
+  height: 230px;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 26px;
+  border: 1px solid #2a3350;
+  background: radial-gradient(120% 120% at 72% -10%, #141a33, #0b0d18);
+}
+.sc-banner-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(8, 9, 15, 0.85) 0%, rgba(8, 9, 15, 0.25) 55%, rgba(8, 9, 15, 0) 80%);
+}
+.sc-banner-content { position: absolute; left: 30px; bottom: 26px; z-index: 2; max-width: 70%; }
+.sc-kicker { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--sc-blue); font-weight: 600; }
+.sc-banner-content h1 { margin: 8px 0 0; font-size: clamp(24px, 4vw, 40px); color: var(--sc-head); letter-spacing: -0.02em; line-height: 1.05; }
+.sc-banner-content p { margin: 8px 0 0; color: var(--sc-text); font-size: 15px; max-width: 520px; }
+
+/* demo ribbon */
+.sc-demo {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0 0 20px;
+  font-size: 12px; letter-spacing: 1px; color: var(--sc-teal);
+  border: 1px solid var(--sc-line); background: rgba(94, 234, 212, 0.07);
+  border-radius: 30px; padding: 7px 14px;
+}
+.sc-demo b { color: var(--sc-head); }
+
+/* section heading */
+.sc-h2 { font-size: clamp(20px, 3vw, 28px); font-weight: 800; color: var(--sc-head); margin: 6px 0 18px; letter-spacing: -0.02em; }
+
+/* card grid + card */
+.sc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.sc-card {
+  background: var(--sc-card); border: 1px solid var(--sc-line); border-radius: 18px;
+  overflow: hidden; text-decoration: none; color: inherit; transition: transform .25s, border-color .25s, background .25s;
+  display: flex; flex-direction: column;
+}
+.sc-card:hover { transform: translateY(-6px); border-color: rgba(255, 255, 255, 0.2); background: var(--sc-card-hi); }
+.sc-card-media { position: relative; height: 168px; background-size: cover; background-position: center; }
+.sc-card-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8, 9, 15, 0.75)); }
+.sc-card-tag { position: absolute; top: 12px; left: 12px; z-index: 2; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  background: rgba(8, 9, 15, 0.6); border: 1px solid var(--sc-line); color: var(--sc-text); border-radius: 20px; padding: 4px 10px; backdrop-filter: blur(6px); }
+.sc-card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+.sc-card-body h3 { margin: 0 0 4px; font-size: 17px; color: var(--sc-head); }
+.sc-card-sub { margin: 0 0 14px; color: var(--sc-muted); font-size: 13.5px; }
+.sc-card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 10px; }
+.sc-price { color: var(--sc-teal); font-weight: 700; font-size: 15px; }
+.sc-price small { color: var(--sc-muted); font-weight: 400; text-decoration: line-through; margin-right: 6px; font-size: 12px; }
+
+/* badges */
+.sc-badge { font-size: 11px; letter-spacing: .5px; border-radius: 20px; padding: 3px 10px; border: 1px solid var(--sc-line); }
+.sc-badge.vip { color: #ffd27a; border-color: rgba(255, 210, 122, 0.4); background: rgba(255, 210, 122, 0.08); }
+.sc-badge.normal { color: var(--sc-blue); border-color: rgba(96, 165, 250, 0.35); background: rgba(96, 165, 250, 0.08); }
+.sc-badge.live { color: #ff8a8a; border-color: rgba(255, 138, 138, 0.4); background: rgba(255, 138, 138, 0.08); }
+.sc-badge.capped { color: var(--sc-teal); border-color: rgba(94, 234, 212, 0.35); background: rgba(94, 234, 212, 0.08); }
+
+/* buttons */
+.sc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13.5px; font-weight: 600;
+  padding: 9px 16px; border-radius: 30px; border: 1px solid var(--sc-line); background: rgba(255, 255, 255, 0.04);
+  color: var(--sc-head); cursor: pointer; transition: .2s; text-decoration: none; }
+.sc-btn.primary { border-color: transparent; background: linear-gradient(120deg, var(--sc-violet), var(--sc-blue)); color: #08090f; }
+.sc-btn:hover { transform: translateY(-2px); }
+
+/* stat tiles */
+.sc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+.sc-stat { background: var(--sc-card); border: 1px solid var(--sc-line); border-radius: 16px; padding: 20px; text-align: center; }
+.sc-stat b { display: block; font-size: clamp(20px, 3vw, 30px); font-weight: 800;
+  background: linear-gradient(120deg, var(--sc-violet), var(--sc-teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sc-stat span { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--sc-muted); }
+
+.sc-wrap { max-width: 1120px; margin: 0 auto; padding: 28px 24px 80px; }
+
+@media (max-width: 900px) { .sc-grid { grid-template-columns: repeat(2, 1fr); } .sc-stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .sc-grid { grid-template-columns: 1fr; } .sc-banner-content { max-width: 90%; } }

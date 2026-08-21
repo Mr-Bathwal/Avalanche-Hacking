@@ -72,7 +72,11 @@ export const EVENT_TICKET_ABI = [
   'function vipConfig() external view returns (uint256 totalVIPSeats, uint256 vipSeatStart, uint256 vipSeatEnd, uint256 vipHoldingPeriod, bool vipEnabled)',
   'function tickets(uint256) external view returns (string eventName, uint256 seatNumber, bool isVIP, uint256 mintedAt, uint256 pricePaid, bool isUsed, bool isTransferable, string venue)',
   'function seatMinted(uint256) external view returns (bool)',
-  // ... you can add more as needed for UI purposes
+  // Ticket + event views used across the UI (marketplace, event details, profile)
+  'function getTicketInfo(uint256 tokenId) external view returns (tuple(string eventName, uint256 seatNumber, bool isVIP, uint256 mintedAt, uint256 pricePaid, bool isUsed, bool isTransferable, string venue))',
+  'function isTicketUsed(uint256 tokenId) external view returns (bool)',
+  'function isSeatAvailable(uint256 seatNumber) external view returns (bool)',
+  'function getEventInfo() external view returns (uint256 startTime, uint256 endTime, string venue, string description, bool cancelled, bool completed)',
 ];
 
 // Enums as plain objects (for frontend logic)

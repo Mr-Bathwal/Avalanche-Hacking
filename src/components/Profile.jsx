@@ -8,6 +8,8 @@ import {
   TICKET_MARKETPLACE_ABI,
   EVENT_FACTORY_ABI,
 } from '../lib/contracts';
+import Banner3D from './Banner3D';
+import { demoProfile, demoTickets } from '../utils/demoData';
 
 export default function Profile() {
   const { address, isConnected } = useAccount();
@@ -182,17 +184,36 @@ export default function Profile() {
 
   if (!isConnected) {
     return (
-      <div className="app-container">
-        <div className="main-content">
-          <div className="hero-collection">
-            <div className="hero-content">
-              <h2>Connect Your Wallet</h2>
-              <p>Please connect your wallet to view your profile</p>
-              <button className="connect-wallet-btn">Connect Wallet</button>
-            </div>
-          </div>
+      <div className="sc-wrap">
+        <Banner3D kicker="Your account" title="Profile" subtitle="Verification, tickets and earnings — all in one place." />
+        <div className="sc-demo">✦ <b>Demo preview</b> — connect a wallet to see your real profile &amp; balances.</div>
+        <div className="sc-stats">
+          <div className="sc-stat"><b>{demoProfile.levelName}</b><span>Verification</span></div>
+          <div className="sc-stat"><b>{demoProfile.stats.ticketsOwned}</b><span>Tickets owned</span></div>
+          <div className="sc-stat"><b>{demoProfile.stats.eventsCreated}</b><span>Events created</span></div>
+          <div className="sc-stat"><b>{demoProfile.stats.revenue} AVAX</b><span>Revenue</span></div>
         </div>
-        <ProfileCSS />
+        <h2 className="sc-h2">My tickets</h2>
+        <div className="sc-grid">
+          {demoTickets.map((t) => (
+            <div className="sc-card" key={t.id}>
+              <div className="sc-card-media" style={{ backgroundImage: `url(${t.image})` }}>
+                <span className="sc-card-tag">Seat {t.seat}</span>
+              </div>
+              <div className="sc-card-body">
+                <h3>{t.event}</h3>
+                <p className="sc-card-sub">
+                  <span className={`sc-badge ${t.tier === 'VIP' ? 'vip' : 'normal'}`}>{t.tier}</span>
+                  <span className="sc-badge" style={{ marginLeft: 6 }}>{t.status}</span>
+                </p>
+                <div className="sc-card-foot">
+                  <span className="sc-price" style={{ fontSize: 13 }}>NFT · {t.id.toUpperCase()}</span>
+                  <button className="sc-btn">View</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { BrowserProvider, Contract, formatEther } from 'ethers';
 import { CONTRACT_ADDRESSES, EVENT_FACTORY_ABI, EVENT_TICKET_ABI } from '../lib/contracts';
 import { sampleCollections } from '../utils/sampleAssets';
+import { demoEvents } from '../utils/demoData';
 import TicketHero3D from '../components/TicketHero3D';
 
 export default function Home() {
@@ -176,6 +177,34 @@ export default function Home() {
               })}
             </div>
           )}
+        </section>
+      )}
+
+      {/* ───────── NOT CONNECTED: FEATURED (demo) ───────── */}
+      {!isConnected && (
+        <section className="lp-section">
+          <p className="lp-kicker lp-reveal">Preview</p>
+          <h2 className="lp-h2 lp-reveal">A taste of what’s on.</h2>
+          <div className="sc-grid">
+            {demoEvents.map((ev) => (
+              <div className="sc-card lp-reveal" key={ev.id}>
+                <div className="sc-card-media" style={{ backgroundImage: `url(${ev.image})` }}>
+                  <span className="sc-card-tag">{ev.tier}</span>
+                </div>
+                <div className="sc-card-body">
+                  <h3>{ev.name}</h3>
+                  <p className="sc-card-sub">{ev.venue} · {ev.city} · {ev.date}</p>
+                  <div className="sc-card-foot">
+                    <span className="sc-price">from {ev.priceFrom} AVAX</span>
+                    <button className="sc-btn primary" onClick={connect}>Book</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p style={{ textAlign: 'center', color: '#828aa3', fontSize: 13, marginTop: 18 }}>
+            ✦ Demo data — connect a wallet to browse live on-chain events.
+          </p>
         </section>
       )}
 

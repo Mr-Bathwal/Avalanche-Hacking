@@ -8,6 +8,8 @@ import {
   EVENT_TICKET_ABI,
 } from "../lib/contracts";
 import { sampleNFTs } from "../utils/sampleAssets";
+import Banner3D from "./Banner3D";
+import { demoAuctions } from "../utils/demoData";
 
 const EVENT_FACTORY_ADDRESS = CONTRACT_ADDRESSES.EVENT_FACTORY;
 const MARKETPLACE_ADDRESS = CONTRACT_ADDRESSES.TICKET_MARKETPLACE;
@@ -344,6 +346,37 @@ export default function AuctionChamber() {
         break;
     }
   }, [activeFilter, auctions]);
+
+  // Recruiter-friendly demo when no wallet is connected
+  if (!account) {
+    return (
+      <div className="sc-wrap">
+        <Banner3D
+          kicker="Live bidding"
+          title="Auction Chamber"
+          subtitle="Bid on rare tickets — anti-snipe auctions with reserve prices, settled in escrow."
+        />
+        <div className="sc-demo">✦ <b>Demo preview</b> — connect a wallet to place real bids.</div>
+        <div className="sc-grid">
+          {demoAuctions.map((a) => (
+            <div className="sc-card" key={a.id}>
+              <div className="sc-card-media" style={{ backgroundImage: `url(${a.image})` }}>
+                <span className="sc-card-tag">⏱ {a.endsIn}</span>
+              </div>
+              <div className="sc-card-body">
+                <h3>{a.event}</h3>
+                <p className="sc-card-sub">Seat {a.seat} · {a.bids} bids · reserve {a.reserve} AVAX</p>
+                <div className="sc-card-foot">
+                  <span className="sc-price">{a.currentBid} AVAX</span>
+                  <button className="sc-btn primary">Place bid</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>

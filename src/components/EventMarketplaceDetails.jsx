@@ -9,6 +9,8 @@ import {
   TICKET_MARKETPLACE_ABI
 } from '../lib/contracts';
 import { sampleNFTs } from '../utils/sampleAssets';
+import Banner3D from './Banner3D';
+import { demoListings } from '../utils/demoData';
 
 export default function EventMarketplace() {
   const { address, isConnected } = useAccount();
@@ -242,6 +244,40 @@ export default function EventMarketplace() {
     }
     return true;
   });
+
+  // Recruiter-friendly demo when no wallet is connected
+  if (!isConnected) {
+    return (
+      <div className="sc-wrap">
+        <Banner3D
+          kicker="Secondary market"
+          title="Ticket Marketplace"
+          subtitle="Buy & resell NFT tickets — resale is capped at +20% over the last sale price, on-chain."
+        />
+        <div className="sc-demo">✦ <b>Demo preview</b> — connect a wallet to trade live listings.</div>
+        <div className="sc-grid">
+          {demoListings.map((l) => (
+            <div className="sc-card" key={l.id}>
+              <div className="sc-card-media" style={{ backgroundImage: `url(${l.image})` }}>
+                <span className="sc-card-tag">Seat {l.seat}</span>
+              </div>
+              <div className="sc-card-body">
+                <h3>{l.event}</h3>
+                <p className="sc-card-sub">
+                  <span className={`sc-badge ${l.tier === 'VIP' ? 'vip' : 'normal'}`}>{l.tier}</span>
+                  {l.capped && <span className="sc-badge capped" style={{ marginLeft: 6 }}>+20% cap</span>}
+                </p>
+                <div className="sc-card-foot">
+                  <span className="sc-price"><small>{l.lastPrice}</small>{l.price} AVAX</span>
+                  <button className="sc-btn primary">Buy</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="marketplace-container">
