@@ -37,10 +37,14 @@
 
 ## 🖼️ Screenshots
 
-| | |
+> Live captures of the deployed app. A **WebGL 3D ticket** hero, and a full
+> **demo mode** (mock data) so you can browse the whole flow with no wallet.
+
+| Landing — WebGL 3D ticket hero | Marketplace — demo mode |
 |:--:|:--:|
-| ![Landing](screenshots/Screenshot%202025-08-22%20025119.png) | ![Marketplace](screenshots/Screenshot%202025-08-23%20155611.png) |
-| ![Events](screenshots/Screenshot%202025-08-23%20123809.png) | ![Details](screenshots/Screenshot%202025-08-23%20155644.png) |
+| ![Landing](screenshots/live-landing.png) | ![Marketplace](screenshots/live-marketplace.png) |
+| **Auction Chamber — demo mode** | **Profile — demo mode** |
+| ![Auction](screenshots/live-auction.png) | ![Profile](screenshots/live-profile.png) |
 
 ---
 
